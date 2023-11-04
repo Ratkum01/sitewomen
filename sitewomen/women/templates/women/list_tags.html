@@ -1,0 +1,8 @@
+{%if tags%}
+<p>TAG :</p>
+<ul class="tags-list">
+    {%for t in tags%}
+    <li class="selected"><a href="{{t.get_absolute_url}}">{{t.tag}}</a></li>
+    {%endfor%}
+</ul>
+{%endif%}
