@@ -33,7 +33,7 @@ cats_db = [
 
 
 def index(request):
-    posts= Women.published.all()
+    posts= Women.published.all().select_related('cat')
     data = {
         "menu": menu,
         "posts": posts,
