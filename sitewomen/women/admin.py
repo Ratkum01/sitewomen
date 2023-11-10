@@ -18,7 +18,7 @@ class MarriedFilter(admin.SimpleListFilter):
 
 @admin.register(Women)
 class WomenAdmin(admin.ModelAdmin):
-    list_display = ("title", "time_create", "is_published", "cat", "brief_info")
+    list_display = ("title", "time_create", "is_published", "cat", "brief_info",)
     list_display_links = ("title",)
     ordering = ["-time_create", "title"]
     list_editable = ("is_published",)
@@ -26,6 +26,10 @@ class WomenAdmin(admin.ModelAdmin):
     actions = ["set_published", "set_draft"]
     search_fields = ["title", "cat__name"]
     list_filter = ["cat__name", "is_published", MarriedFilter]
+    fields=['title', 'content','slug' , "cat", 'is_published', 'tags']
+    # exclude=['title']
+    readonly_fields=['slug']
+    filter_horizontal=['tags']
 
     @admin.display(description="Краткое описание", ordering="content")
     def brief_info(self, women: Women):
