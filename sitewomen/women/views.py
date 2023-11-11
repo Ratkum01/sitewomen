@@ -1,6 +1,8 @@
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, render
 
+from women.forms import AddPostForm
+
 from .models import Category, TagPost, Women
 
 # Create your views here.
@@ -33,7 +35,7 @@ cats_db = [
 
 
 def index(request):
-    posts= Women.published.all().select_related('cat')
+    posts = Women.published.all().select_related("cat")
     data = {
         "menu": menu,
         "posts": posts,
@@ -49,7 +51,14 @@ def about(request):
 
 
 def add_page(request):
-    return HttpResponse("Add Page")
+    if request.method=='POST':
+        form=AddPostForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+    else:
+        form=AddPostForm()
+    data={"menu": menu, "title": "ADD PAGE" ,'form':form}
+    return render(request, "women/addpage.html", data)
 
 
 def contact(request):
@@ -62,41 +71,40 @@ def login(request):
 
 def show_post(request, post_slug):
     post = get_object_or_404(Women, slug=post_slug)
-    
+
     data = {
         "title": post.title,
         "menu": menu,
         "post": post,
         "cat_selected": 1,
     }
-    return render(request, 'women/post.html', data)
+    return render(request, "women/post.html", data)
 
 
 def show_category(request, cat_slug):
-    category= get_object_or_404(Category,slug= cat_slug)
+    category = get_object_or_404(Category, slug=cat_slug)
     posts = Women.published.filter(cat_id=category.pk).select_related("cat")
     data = {
-        'title': f'Рубрика {category.name}',
-        'menu':menu,
-        'posts':posts,
-        'cat_selected': category.pk
+        "title": f"Рубрика {category.name}",
+        "menu": menu,
+        "posts": posts,
+        "cat_selected": category.pk,
     }
-    
+
     return render(request, "women/index.html", context=data)
-    
 
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>ERRRRRRRRRRRRRRRRRRORRRR</h1>")
 
-def show_tag(request, tag_slug):
-    tag= get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related("cat")
-    data={
-        'title': f'tag {tag.tag}',
-        'menu':menu,
-        'posts':posts,
-        'cat_selected':None
-    }
-    return render (request, 'women/index.html', data)
 
+def show_tag(request, tag_slug):
+    tag = get_object_or_404(TagPost, slug=tag_slug)
+    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related("cat")
+    data = {
+        "title": f"tag {tag.tag}",
+        "menu": menu,
+        "posts": posts,
+        "cat_selected": None,
+    }
+    return render(request, "women/index.html", data)

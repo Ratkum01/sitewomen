@@ -1,0 +1,13 @@
+{%extends 'base.html'%}
+{% block content %}
+<h1>HELLO</h1>
+<form action=""POST">
+    {%csrf_token%}
+    {{form.as_p}}
+    <!-- <input type="text"><br>
+    <input type="checkbox"><br>
+    <input type="number" name="" id=""><br>
+    <input type="password"><br> -->
+    <p><button type="submit">OTPRAVIT</button></p>
+</form>
+{% endblock %}
