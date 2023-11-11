@@ -1,13 +1,13 @@
 {%extends 'base.html'%}
 {% block content %}
 <h1>HELLO</h1>
-<form action=""POST">
+<form action="" method="post">
     {%csrf_token%}
-    {{form.as_p}}
-    <!-- <input type="text"><br>
-    <input type="checkbox"><br>
-    <input type="number" name="" id=""><br>
-    <input type="password"><br> -->
+    <div class="form-error">{{form.non_field_errors}}</div>
+    {%for f in form%}
+    <p><label class="form-label" for="{{f.id_for_label}}">{{f.label}}</label>{{f}}</p>
+    <div class="form-error">{{f.errors}}</div>
+    {%endfor%}
     <p><button type="submit">OTPRAVIT</button></p>
 </form>
 {% endblock %}
