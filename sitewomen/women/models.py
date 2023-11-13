@@ -73,6 +73,8 @@ class Women(models.Model):
         blank=True,
         related_name="wuman",
     )
+    photo = models.ImageField(upload_to="photos/%Y/%m/%d/", default=None,
+                              blank=True, null=True, verbose_name="Фото")
 
     published = PublishedManager()
     objects = models.Manager()
@@ -132,5 +134,7 @@ class Husband(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
 class UploadFiles(models.Model):
-    file=models.FileField(upload_to='uploads_model')
+    file = models.FileField(upload_to='uploads_model')

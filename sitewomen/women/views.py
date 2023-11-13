@@ -1,9 +1,9 @@
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, redirect, render
 
-from women.forms import AddPostForm
+from women.forms import AddPostForm, UploadFileForm
 
-from .models import Category, TagPost, Women
+from .models import Category, TagPost, UploadFiles, Women
 
 # Create your views here.
 
@@ -46,13 +46,21 @@ def index(request):
 
 
 def about(request):
-    data = {"menu": menu, "posts": data_db}
-    return render(request, "women/about.html", data)
+    if request.method == 'POST':
+        form = UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            fp = UploadFiles(file=form.cleaned_data['file'])
+            fp.save()
+    else:
+        form = UploadFileForm()
+    return render(request, 'women/about.html',
+                  {'title': 'О сайте', 'menu': menu, 'form': form})
+
 
 
 def add_page(request):
     if request.method == "POST":
-        form = AddPostForm(request.POST)
+        form = AddPostForm(request.POST, request.FILES)
         if form.is_valid():
             # print(form.cleaned_data)
             # print('hello')
