@@ -1,7 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<ul class="list-articles">
-	HELOOO
-</ul>
+<h1>{{title}}</h1>
+<form action="" method="post" enctype="multipart/form-data">
+	{%csrf_token%}
+	
+</form>
+
 {% endblock %}

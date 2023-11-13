@@ -56,11 +56,13 @@ def add_page(request):
         if form.is_valid():
             # print(form.cleaned_data)
             # print('hello')
-            try:
-                Women.objects.create(**form.cleaned_data)
-                return redirect("home")
-            except:
-                form.add_error(None, "Ошибка добавления поста")
+            # try:
+            #     Women.objects.create(**form.cleaned_data)
+            #     return redirect("home")
+            # except:
+            #     form.add_error(None, "Ошибка добавления поста")
+            form.save()
+            return redirect('home')
     else:
         form = AddPostForm()
     data = {"menu": menu, "title": "ADD PAGE", "form": form}
