@@ -1,6 +1,6 @@
 from django.contrib import admin, messages
 from .models import Women, Category
-
+from django.utils.safestring import mark_safe
 
 class MarriedFilter(admin.SimpleListFilter):
     title = "Статус женщин"
@@ -18,7 +18,9 @@ class MarriedFilter(admin.SimpleListFilter):
 
 @admin.register(Women)
 class WomenAdmin(admin.ModelAdmin):
-    list_display = ("title", "time_create", "is_published", "cat", "brief_info",)
+    fields = ['title', 'slug', 'content', 'photo', 'post_photo', 'cat', 'husband', 'tags']
+    list_display = ('title', 'post_photo', 'time_create', 'is_published', 'cat')
+    readonly_fields = ['post_photo']
     list_display_links = ("title",)
     ordering = ["-time_create", "title"]
     list_editable = ("is_published",)
@@ -30,6 +32,12 @@ class WomenAdmin(admin.ModelAdmin):
     # exclude=['title']
     readonly_fields=['slug']
     filter_horizontal=['tags']
+
+    @admin.display(description="Изображение", ordering='content')
+    def post_photo(self, women: Women):
+        if women.photo:
+            return mark_safe(f"<img src='{women.photo.url}' width=50>")
+        return "Без фото"
 
     @admin.display(description="Краткое описание", ordering="content")
     def brief_info(self, women: Women):

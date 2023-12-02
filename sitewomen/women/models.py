@@ -54,8 +54,8 @@ class Women(models.Model):
         DRAFT = 0, "Черновик"
         PUBLISHED = 1, "Опубликовано"
 
-    title = models.CharField(max_length=255, verbose_name="НАЗВАНИЕ ЧЕ ТАМ ?")
-    content = models.TextField(blank=True)
+    title = models.CharField(max_length=255, verbose_name="Название")
+    content = models.TextField(blank=True,verbose_name="Контент")
     time_create = models.DateTimeField(auto_now_add=True)
     time_update = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(

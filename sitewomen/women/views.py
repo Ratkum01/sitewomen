@@ -103,7 +103,7 @@ def show_category(request, cat_slug):
     data = {
         "title": f"Рубрика {category.name}",
         "menu": menu,
-        "posts": posts,
+        "posts": posts, 
         "cat_selected": category.pk,
     }
 
