@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, redirect, render
-
+from django.views import View
+from django.views.generic.base import TemplateView
 from women.forms import AddPostForm, UploadFileForm
 
 from .models import Category, TagPost, UploadFiles, Women
@@ -44,7 +45,14 @@ def index(request):
 
     return render(request, "women/index.html", data)
 
-
+#Zamena dlya def index
+class WomenHome(TemplateView):
+    template_name='women/index.html'
+    extra_context={
+        "menu": menu,
+        "posts": Women.published.all().select_related("cat"),
+        "cat_selected": 0,
+    }
 def about(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
@@ -75,6 +83,28 @@ def add_page(request):
         form = AddPostForm()
     data = {"menu": menu, "title": "ADD PAGE", "form": form}
     return render(request, "women/addpage.html", data)
+
+class AddPage(View):
+    def get(self, request):
+        form=AddPostForm()
+        data={
+            'menu':menu,
+            'title':'Dobavit statiu',
+            'form':form
+        }
+        return render(request, 'women/addpage.html',data)
+    def post(self, request):
+        form=AddPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        data={
+            'menu':menu,
+            'title':'Dobavit statiu',
+            'form':form
+        }
+        return render(request, 'women/addpage.html',data)
+        
 
 
 def contact(request):
