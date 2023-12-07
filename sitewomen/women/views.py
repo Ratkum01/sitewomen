@@ -3,7 +3,7 @@ from django.db.models.query import QuerySet
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
-from django.views.generic import TemplateView, ListView
+from django.views.generic import TemplateView, ListView, DetailView
 from women.forms import AddPostForm, UploadFileForm
 
 from .models import Category, TagPost, UploadFiles, Women
@@ -134,18 +134,33 @@ def show_post(request, post_slug):
     }
     return render(request, "women/post.html", data)
 
+class ShowPost(DetailView):
+    template_name="women/post.html"
+    slug_url_kwarg='post_slug'
+    context_object_name='post'
 
-def show_category(request, cat_slug):
-    category = get_object_or_404(Category, slug=cat_slug)
-    posts = Women.published.filter(cat_id=category.pk).select_related("cat")
-    data = {
-        "title": f"Рубрика {category.name}",
-        "menu": menu,
-        "posts": posts,
-        "cat_selected": category.pk,
-    }
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title']=context['post'].title
+        context['menu']=menu
+        return context
+    
+    def get_object (self, queryset=None):
+        return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
-    return render(request, "women/index.html", context=data)
+
+
+# def show_category(request, cat_slug):
+#     category = get_object_or_404(Category, slug=cat_slug)
+#     posts = Women.published.filter(cat_id=category.pk).select_related("cat")
+#     data = {
+#         "title": f"Рубрика {category.name}",
+#         "menu": menu,
+#         "posts": posts,
+#         "cat_selected": category.pk,
+#     }
+
+#     return render(request, "women/index.html", context=data)
 class WomenCategory(ListView):
     template_name= 'women/index.html'
     context_object_name='posts'
@@ -167,13 +182,31 @@ def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>ERRRRRRRRRRRRRRRRRRORRRR</h1>")
 
 
-def show_tag(request, tag_slug):
-    tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related("cat")
-    data = {
-        "title": f"tag {tag.tag}",
-        "menu": menu,
-        "posts": posts,
-        "cat_selected": None,
-    }
-    return render(request, "women/index.html", data)
+# def show_tag(request, tag_slug):
+#     tag = get_object_or_404(TagPost, slug=tag_slug)
+#     posts = tag.tags.filter(is_published=Women.Status.PUBLISHED).select_related("cat")
+#     data = {
+#         "title": f"tag {tag.tag}",
+#         "menu": menu,
+#         "posts": posts,
+#         "cat_selected": None,
+#     }
+#     return render(request, "women/index.html", data)
+
+class WomenTag(ListView):
+    template_name='women/index.html'
+    context_object_name='posts'
+    allow_empty=False
+
+    def get_context_data(self, *, object_list=None,**kwargs):
+        context=super().get_context_data(**kwargs)
+        tag= TagPost.objects.get(slug=self.kwargs['tag_slug'])
+        context['title']= 'Тэг-'+tag.tag
+        context['menu']= menu
+        context['cat_selected']=None
+        return context
+
+    def get_queryset(self):
+        return Women.published.filter(tags__slug= self.kwargs['tag_slug']).select_related('cat')
+    
+    
