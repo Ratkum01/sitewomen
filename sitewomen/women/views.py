@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView, FormView,CreateView, UpdateView
+from women.utils import DataMixin
 from women.forms import AddPostForm, UploadFileForm
 
 from .models import Category, TagPost, UploadFiles, Women
@@ -57,14 +58,17 @@ def index(request):
 #         "posts": c
 #         "cat_selected": 0,
 #     }
-class WomenHome(ListView):
+
+class WomenHome(DataMixin, ListView):
     template_name = "women/index.html"
     context_object_name = "posts"
-    extra_context = {
-        "menu": menu,
-        "title": 'GLAV',
-        "cat_selected": 0,
-    }
+    title_page = 'Glav Str'
+    cat_selected = 0
+    # extra_context = {
+    #     "menu": menu,
+    #     "title": 'GLAV',
+    #     "cat_selected": 0,
+    # }
     def get_queryset(self):
         return Women.published.all().select_related("cat")
 
@@ -127,23 +131,26 @@ def add_page(request):
 #         form.save()
 #         return super().form_valid(form)
 
-class AddPage(CreateView):
+class AddPage(DataMixin, CreateView):
     form_class=AddPostForm
     template_name='women/addpage.html'
-    extra_context={
-        'menu':menu,
-        'title':'Dobavit stati'
-    }
+    title_page='Dobav Statie'
 
-class UpdatePage(UpdateView):
+    # extra_context={
+    #     'menu':menu,
+    #     'title':'Dobavit stati'
+    # }
+
+class UpdatePage(DataMixin, UpdateView):
     model= Women
     fields=['title', 'content', 'photo', 'is_published','cat']
     template_name='women/addpage.html'
     success_url=reverse_lazy('home')
-    extra_context={
-        'menu':menu,
-        'title':'Dobavit stati'
-    }
+    title_page='Redaktir Statie'
+    # extra_context={
+    #     'menu':menu,
+    #     'title':'Dobavit stati'
+    # }
 
 def contact(request):
     return HttpResponse("contact contact")
@@ -164,16 +171,17 @@ def show_post(request, post_slug):
     }
     return render(request, "women/post.html", data)
 
-class ShowPost(DetailView):
+class ShowPost(DataMixin , DetailView):
     template_name="women/post.html"
     slug_url_kwarg='post_slug'
     context_object_name='post'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title']=context['post'].title
-        context['menu']=menu
-        return context
+        return self.get_mixin_context(context, title = context['post'].title )
+        # context['title']=context['post'].title
+        # context['menu']=menu
+        # return context
     
     def get_object (self, queryset=None):
         return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
@@ -191,7 +199,7 @@ class ShowPost(DetailView):
 #     }
 
 #     return render(request, "women/index.html", context=data)
-class WomenCategory(ListView):
+class WomenCategory(DataMixin, ListView):
     template_name= 'women/index.html'
     context_object_name='posts'
     allow_empty=False
@@ -204,10 +212,11 @@ class WomenCategory(ListView):
     def get_context_data(self, **kwargs):
         context=super().get_context_data(**kwargs)
         cat= context['posts'][0].cat
-        context['title']= 'Category-'+cat.name
-        context['menu']= menu
-        context['cat_selected']=cat.pk
-        return context
+        return self.get_mixin_context(context, title= 'Category - '+ cat.name, cat_selected= cat.pk)
+        # context['title']= 'Category-'+cat.name
+        # context['menu']= menu
+        # context['cat_selected']=cat.pk
+        # return context
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>ERRRRRRRRRRRRRRRRRRORRRR</h1>")
 
@@ -223,7 +232,7 @@ def page_not_found(request, exception):
 #     }
 #     return render(request, "women/index.html", data)
 
-class WomenTag(ListView):
+class WomenTag(DataMixin, ListView):
     template_name='women/index.html'
     context_object_name='posts'
     allow_empty=False
@@ -231,10 +240,11 @@ class WomenTag(ListView):
     def get_context_data(self, *, object_list=None,**kwargs):
         context=super().get_context_data(**kwargs)
         tag= TagPost.objects.get(slug=self.kwargs['tag_slug'])
-        context['title']= 'Тэг-'+tag.tag
-        context['menu']= menu
-        context['cat_selected']=None
-        return context
+        return self.get_mixin_context(context, title= 'Teg: '+tag.tag)
+        # context['title']= 'Тэг-'+tag.tag
+        # context['menu']= menu
+        # context['cat_selected']=None
+        # return context
 
     def get_queryset(self):
         return Women.published.filter(tags__slug= self.kwargs['tag_slug']).select_related('cat')
