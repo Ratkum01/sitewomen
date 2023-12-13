@@ -64,6 +64,7 @@ class WomenHome(DataMixin, ListView):
     context_object_name = "posts"
     title_page = 'Glav Str'
     cat_selected = 0
+    
     # extra_context = {
     #     "menu": menu,
     #     "title": 'GLAV',

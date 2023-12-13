@@ -8,6 +8,7 @@ class DataMixin:
     title_page= None
     cat_selected= None
     extra_context= {}
+    paginate_by= 3
     
     def __init__(self):
         if self.title_page:
