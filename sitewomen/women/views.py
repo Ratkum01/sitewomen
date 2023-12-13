@@ -7,6 +7,8 @@ from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView, FormView,CreateView, UpdateView
 from women.utils import DataMixin
 from women.forms import AddPostForm, UploadFileForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Category, TagPost, UploadFiles, Women
 
@@ -73,7 +75,7 @@ class WomenHome(DataMixin, ListView):
     def get_queryset(self):
         return Women.published.all().select_related("cat")
 
-
+@login_required
 def about(request):
     if request.method == "POST":
         form = UploadFileForm(request.POST, request.FILES)
@@ -132,11 +134,16 @@ def add_page(request):
 #         form.save()
 #         return super().form_valid(form)
 
-class AddPage(DataMixin, CreateView):
+class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     form_class=AddPostForm
     template_name='women/addpage.html'
     title_page='Dobav Statie'
 
+    def form_valid(self, form):
+        w= form.save(commit=False)
+        w.author =self.request.user
+        return super().form_valid(form)
+    
     # extra_context={
     #     'menu':menu,
     #     'title':'Dobavit stati'

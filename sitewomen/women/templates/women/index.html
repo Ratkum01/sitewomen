@@ -5,7 +5,7 @@
 	{% for p in posts %}
 	<li>
 		<div class="article-panel">
-			<p class="first">Категория: {{p.cat.name}}</p>
+			<p class="first">Категория: {{p.cat.name}} | Автор- {{ p.author.username|default:"Неизвестен" }}</p>
 			<p class="last">Date: {{p.time_update| date:'d-m-Y H:i:s'}}</p>
 		</div>
 		<h2>{{p.title}}</h2>
@@ -35,7 +35,7 @@
 		{% if page_obj.number == p %}
 		<li class="page-num page-num-selected">{{ p }}</li>
 		{% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
-        <li class="page-num">
+        <li class="page-num">	
             <a href="?page={{ p }}">{{ p }}</a>
         </li>
 		{% endif %}

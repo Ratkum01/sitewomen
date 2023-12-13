@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models.query import QuerySet
 from django.urls import reverse
 from django.utils.text import slugify
-
+from django.contrib.auth import get_user_model
 
 # Create your models here.
 def translit_to_eng(s: str) -> str:
@@ -75,6 +75,7 @@ class Women(models.Model):
     )
     photo = models.ImageField(upload_to="photos/%Y/%m/%d/", default=None,
                               blank=True, null=True, verbose_name="Фото")
+    author= models.ForeignKey(get_user_model() , on_delete=models.SET_NULL, related_name='post', null=True, default=None)
 
     published = PublishedManager()
     objects = models.Manager()
