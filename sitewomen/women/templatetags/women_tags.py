@@ -1,14 +1,14 @@
 from django import template
 from women.models import Category, TagPost
 from django.db.models import Count
-
+from women.utils import menu
 from women import views
 
 register = template.Library()
 
-# @register.simple_tag
-# def get_categories():
-#     return views.cats_db
+@register.simple_tag
+def get_menu():
+    return menu
 
 
 @register.inclusion_tag("women/list_categories.html")
