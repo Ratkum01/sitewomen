@@ -28,7 +28,7 @@
 						{% if user.is_authenticated%}
 						<li class="last">{{user.username}} | <a href="{% url 'users:logout' %}">Выйти</a></li>
 						{% else %}
-						<li class="last"><a href="{%url 'users:login' %}">ВОЙТИ </a>| <a href="#"> РЕГИСТРАЦИЯ</a></li>
+						<li class="last"><a href="{%url 'users:login' %}">ВОЙТИ </a>| <a href="{% url 'users:register' %}"> РЕГИСТРАЦИЯ</a></li>
 						{%endif%}
 					</ul>
 					<div class="clear"></div>
