@@ -29,3 +29,19 @@ class RegisterUserForm(UserCreationForm):
             'first_name':forms.TextInput(attrs={'class':'form-input'}),
             'last_name': forms.TextInput(attrs={'class':'form-input'})
         }
+    # def clean_email(self)
+class ProfileUserForm(forms.ModelForm):
+    username = forms.CharField(disabled= True, label = 'Login',  widget=forms.TextInput(attrs={'class':'form-input'}))
+    email= forms.CharField(disabled=True, label='Email',  widget=forms.TextInput(attrs={'class':'form-input'}))
+
+    class Meta:
+        model= get_user_model()
+        fields= ['username', 'email', 'first_name', 'last_name']
+        lavels= {
+            'first_name':'Name',
+            'last_name':'Familia'
+        }
+        widgets= {
+            'first_name': forms.TextInput(attrs={'class':'form-input'}),
+            'last_name': forms.TextInput(attrs={'class':'form-input'})
+        }

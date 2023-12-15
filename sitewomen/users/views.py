@@ -5,8 +5,9 @@ from django.shortcuts import render
 from django.contrib.auth.views import LoginView
 from django.views.generic import CreateView
 from django.urls import reverse_lazy
-
-from users.forms import LoginUserForm, RegisterUserForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from users.forms import LoginUserForm, ProfileUserForm, RegisterUserForm
+from django.views.generic.edit import UpdateView
 # Create your views here.
 
 # def login_user(request):
@@ -35,3 +36,16 @@ class RegisterUser(CreateView):
 
 # def logout_user(request):
 #     return HttpResponse('logout')
+
+class ProfileUser(LoginRequiredMixin, UpdateView):
+    model= get_user_model()
+    form_class =ProfileUserForm
+    template_name = 'users/profile.html'
+    extra_context = {'title':'Profile users'}
+    
+    def get_success_url(self):
+        return reverse_lazy('users:profile')
+    
+    def get_object(self, queryset=None):
+        return self.request.user
+    
